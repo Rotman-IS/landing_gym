@@ -1,1 +1,1 @@
-# landing-gym
+# landing_gym
