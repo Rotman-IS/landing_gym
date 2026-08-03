@@ -19,7 +19,7 @@ class CtaSection extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.primary, AppTheme.accent],
+          colors: [AppTheme.dark, AppTheme.accent],
         ),
       ),
       child: Column(
@@ -29,7 +29,6 @@ class CtaSection extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.displayMedium?.copyWith(
                   fontSize: isMobile ? 28 : 36,
-                  color: Colors.white,
                 ),
           ),
           const SizedBox(height: 16),
@@ -37,15 +36,15 @@ class CtaSection extends StatelessWidget {
             AppConstants.ctaSubtitle,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.9),
+                  color: AppTheme.textPrimary,
                 ),
           ),
           const SizedBox(height: 32),
           ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primary,
+              backgroundColor: AppTheme.primary,
+              foregroundColor: AppTheme.onPrimary,
               padding: const EdgeInsets.symmetric(
                 horizontal: 40,
                 vertical: 18,

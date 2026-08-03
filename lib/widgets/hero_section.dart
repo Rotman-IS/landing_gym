@@ -30,7 +30,7 @@ class HeroSection extends StatelessWidget {
               height: 400,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.primary.withOpacity(0.1),
+                color: AppTheme.glow,
               ),
             ),
           ),
@@ -42,7 +42,7 @@ class HeroSection extends StatelessWidget {
               height: 200,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppTheme.accent.withOpacity(0.05),
+                color: AppTheme.glowSoft,
               ),
             ),
           ),

@@ -70,7 +70,7 @@ class _TestimonialCard extends StatelessWidget {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.secondary.withOpacity(0.2),
+          color: AppTheme.cardBorder,
         ),
       ),
       child: Column(
@@ -93,7 +93,7 @@ class _TestimonialCard extends StatelessWidget {
           Text(
             name,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppTheme.primary,
+                  color: AppTheme.textPrimary,
                 ),
           ),
         ],

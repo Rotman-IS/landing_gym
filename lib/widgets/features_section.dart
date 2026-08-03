@@ -71,7 +71,7 @@ class _FeatureCard extends StatelessWidget {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppTheme.primary.withOpacity(0.3),
+          color: AppTheme.cardBorder,
           width: 1,
         ),
       ),

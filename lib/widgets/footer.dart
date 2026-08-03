@@ -90,7 +90,7 @@ class _InfoRow extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: AppTheme.primary),
+        Icon(icon, size: 16, color: AppTheme.secondary),
         const SizedBox(width: 8),
         Text(text, style: const TextStyle(color: AppTheme.textSecondary)),
       ],
@@ -114,7 +114,7 @@ class _SocialIcon extends StatelessWidget {
           color: AppTheme.surface,
           shape: BoxShape.circle,
           border: Border.all(
-            color: AppTheme.primary.withOpacity(0.5),
+            color: AppTheme.cardBorder,
           ),
         ),
         child: Icon(icon, color: AppTheme.primary, size: 20),
