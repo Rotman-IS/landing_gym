@@ -31,6 +31,16 @@ class AppTheme {
   static Color get glow => accent.withValues(alpha: 0.28);
   static Color get glowSoft => primary.withValues(alpha: 0.10);
 
+  // Scrim: capa que se interpone entre contenido fotografico y texto para
+  // garantizar legibilidad. Se usa como gradiente vertical de scrimDense
+  // (arriba, donde vive el texto) a scrimClear (abajo, donde vive el sujeto
+  // de la foto). Su opacidad se calibra contra la zona MAS CLARA de la
+  // imagen bajo la banda de texto, no contra su luminancia promedio: el
+  // contrato de contraste de abajo esta definido frente a superficies
+  // planas y no aplica a un bitmap.
+  static Color get scrimDense => darker.withValues(alpha: 0.88);
+  static Color get scrimClear => darker.withValues(alpha: 0.0);
+
   // Contrato de contraste (WCAG 2.1). Al cambiar cualquier valor de arriba,
   // reverificar estos pares:
   //

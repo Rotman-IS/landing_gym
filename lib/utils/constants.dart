@@ -10,6 +10,8 @@ class AppConstants {
       'Únete a la mejor comunidad de fitness de la ciudad. Tu primera clase es gratis.';
   static const String ctaButton = 'Agenda tu visita';
 
+  static const String heroBannerAsset = 'assets/images/heroBanner.webp';
+
   static const List<Map<String, String>> features = [
     {
       'icon': 'fitness_center',
