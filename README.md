@@ -212,6 +212,14 @@ flutter build web --base-href /repo/
 
 Omitirlo hace que los assets se pidan desde la raíz del dominio y la página cargue en blanco.
 
+### GitHub Pages (automático)
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) compila y publica en cada push a `main`, así que **no hace falta versionar `build/`** ni usar otro repositorio. Sitio publicado: <https://rotman-is.github.io/landing_gym/>.
+
+Configuración única en GitHub: **Settings → Pages → Source: GitHub Actions**.
+
+El workflow no corre `flutter test` a propósito: el fallo conocido de `App renders landing screen` (ver [Tests](#tests)) bloquearía todos los despliegues. `flutter analyze` corre como paso informativo.
+
 ## Flujo OpenSpec
 
 El diseño de este proyecto está versionado con [OpenSpec](https://github.com/Fission-AI/OpenSpec). No es necesario para ejecutar la landing, pero explica por qué el código está como está.
