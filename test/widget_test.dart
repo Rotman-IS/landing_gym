@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:landing_gym/main.dart';
-import 'package:landing_gym/screens/landing_screen.dart';
-import 'package:landing_gym/theme/app_theme.dart';
-import 'package:landing_gym/utils/constants.dart';
-import 'package:landing_gym/widgets/features_section.dart';
-import 'package:landing_gym/widgets/hero_section.dart';
-import 'package:landing_gym/widgets/navbar.dart';
+import 'package:basic_landing/main.dart';
+import 'package:basic_landing/screens/landing_screen.dart';
+import 'package:basic_landing/theme/app_theme.dart';
+import 'package:basic_landing/utils/constants.dart';
+import 'package:basic_landing/widgets/features_section.dart';
+import 'package:basic_landing/widgets/hero_section.dart';
+import 'package:basic_landing/widgets/navbar.dart';
 
 /// El viewport por defecto de flutter_test es 800 x 600, que cae siempre en la
 /// rama desktop del hero. Fijar el tamano explicitamente es la unica forma de

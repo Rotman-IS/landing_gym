@@ -1,5 +1,5 @@
-name: landing_gym
-description: A new Flutter project.
+name: basic_landing
+description: Plantilla de landing page en Flutter — una sola pantalla, contenido en español y sin dependencias externas, lista para re-marcar.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev

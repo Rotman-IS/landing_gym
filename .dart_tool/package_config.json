@@ -164,7 +164,7 @@
       "languageVersion": "3.5"
     },
     {
-      "name": "landing_gym",
+      "name": "basic_landing",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.1"
