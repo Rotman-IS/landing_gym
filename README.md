@@ -16,7 +16,6 @@ El contenido que trae de fábrica es una demo: un gimnasio ficticio llamado **Ir
 
 ![Testimonios y llamada a la acción](docs/screenshots/04-testimonials-cta.png)
 
-> Las cuatro imágenes son marcadores de posición. Cada archivo indica en su interior qué capturar y a qué ancho; para reemplazarlas, guardá tu captura encima con el mismo nombre en [docs/screenshots/](docs/screenshots/) — no hace falta tocar este README.
 
 ---
 
