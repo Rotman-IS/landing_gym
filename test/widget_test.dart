@@ -5,6 +5,7 @@ import 'package:landing_gym/main.dart';
 import 'package:landing_gym/screens/landing_screen.dart';
 import 'package:landing_gym/theme/app_theme.dart';
 import 'package:landing_gym/utils/constants.dart';
+import 'package:landing_gym/widgets/features_section.dart';
 import 'package:landing_gym/widgets/hero_section.dart';
 import 'package:landing_gym/widgets/navbar.dart';
 
@@ -27,9 +28,8 @@ class _FailingAssetBundle extends CachingAssetBundle {
 }
 
 /// Monta el hero aislado. Las pruebas de esta capability no montan la landing
-/// completa a proposito: navbar, features y footer tienen desbordamientos de
-/// layout preexistentes que harian fallar cualquier test por motivos ajenos al
-/// hero.
+/// completa a proposito: navbar y footer tienen desbordamientos de layout
+/// preexistentes que harian fallar cualquier test por motivos ajenos al hero.
 Future<void> pumpHero(WidgetTester tester, {AssetBundle? bundle}) async {
   final Widget app = MaterialApp(
     theme: AppTheme.darkTheme,
@@ -39,6 +39,38 @@ Future<void> pumpHero(WidgetTester tester, {AssetBundle? bundle}) async {
     bundle == null ? app : DefaultAssetBundle(bundle: bundle, child: app),
   );
 }
+
+/// Monta la seccion de features aislada, por el mismo motivo que `pumpHero`:
+/// los desbordamientos del navbar y del footer son ajenos a esta capability.
+///
+/// [textScaler] permite forzar un contenido mas alto sin tocar el copy de
+/// `AppConstants`, que es `const` y no se puede sustituir desde una prueba.
+Future<void> pumpFeatures(WidgetTester tester, {TextScaler? textScaler}) async {
+  const Widget section =
+      Scaffold(body: SingleChildScrollView(child: FeaturesSection()));
+  await tester.pumpWidget(MaterialApp(
+    theme: AppTheme.darkTheme,
+    home: textScaler == null
+        ? section
+        : Builder(
+            builder: (context) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+              child: section,
+            ),
+          ),
+  ));
+}
+
+/// Rectangulos de las cuatro tarjetas, en el orden de `AppConstants.features`.
+List<Rect> featureCardRects(WidgetTester tester) => List.generate(
+      AppConstants.features.length,
+      (i) => tester.getRect(find.byKey(FeaturesSection.cardKey(i))),
+    );
+
+/// Numero de filas de la reticula, deducido de cuantas coordenadas verticales
+/// distintas ocupan las tarjetas.
+int featureRowCount(WidgetTester tester) =>
+    featureCardRects(tester).map((r) => r.top).toSet().length;
 
 void main() {
   testWidgets('App renders landing screen', (WidgetTester tester) async {
@@ -147,6 +179,126 @@ void main() {
       expect(find.text(AppConstants.heroSubtitle), findsOneWidget);
       expect(find.widgetWithText(ElevatedButton, AppConstants.ctaText),
           findsOneWidget);
+    });
+  });
+
+  group('reticula de features', () {
+    // 1024 es el peor caso y el ancho reportado: es el piso de la rama
+    // desktop, donde el ancho se reparte de golpe en 4 columnas. 1024x600 (PC
+    // pequena) y 1024x1366 (iPad Pro vertical) son el mismo caso, porque la
+    // seccion vive en un SingleChildScrollView y su alto de viewport no cuenta.
+    const List<double> anchos = [360, 599, 600, 1023, 1024, 1280, 1920];
+
+    testWidgets('ningun ancho desborda las tarjetas',
+        (WidgetTester tester) async {
+      for (final double ancho in anchos) {
+        setSurface(tester, Size(ancho, 900));
+        await pumpFeatures(tester);
+
+        expect(tester.takeException(), isNull,
+            reason: 'la reticula desborda a $ancho px de ancho');
+      }
+    });
+
+    testWidgets('el texto completo de las tarjetas queda visible',
+        (WidgetTester tester) async {
+      for (final double ancho in anchos) {
+        setSurface(tester, Size(ancho, 900));
+        await pumpFeatures(tester);
+
+        for (final feature in AppConstants.features) {
+          expect(find.text(feature['title']!), findsOneWidget,
+              reason: 'falta el titulo a $ancho px');
+          expect(find.text(feature['description']!), findsOneWidget,
+              reason: 'falta la descripcion a $ancho px');
+        }
+      }
+    });
+
+    testWidgets('el numero de columnas sigue los breakpoints',
+        (WidgetTester tester) async {
+      // 4 features: 1 columna -> 4 filas, 2 columnas -> 2 filas, 4 -> 1 fila.
+      final Map<double, int> filasEsperadas = {
+        360: 4,
+        599: 4,
+        600: 2,
+        1023: 2,
+        1024: 1,
+        1920: 1,
+      };
+
+      for (final entry in filasEsperadas.entries) {
+        setSurface(tester, Size(entry.key, 900));
+        await pumpFeatures(tester);
+
+        expect(featureRowCount(tester), entry.value,
+            reason: 'reparto de columnas incorrecto a ${entry.key} px');
+      }
+    });
+
+    testWidgets('las tarjetas de una fila comparten alto y ancho',
+        (WidgetTester tester) async {
+      setSurface(tester, const Size(1024, 900));
+      await pumpFeatures(tester);
+
+      final List<Rect> cards = featureCardRects(tester);
+
+      expect(cards.map((r) => r.height).toSet(), hasLength(1),
+          reason: 'las descripciones tienen distinto largo, pero las cuatro '
+              'tarjetas de la fila tienen que medir lo mismo de alto');
+      expect(cards.map((r) => r.bottom).toSet(), hasLength(1),
+          reason: 'los bordes inferiores quedan alineados');
+      expect(cards.map((r) => r.width).toSet(), hasLength(1),
+          reason: 'el ancho se reparte en partes iguales');
+    });
+
+    testWidgets('a 1024 px el alto lo fija el contenido, no el ancho',
+        (WidgetTester tester) async {
+      setSurface(tester, const Size(1024, 900));
+      await pumpFeatures(tester);
+
+      final Rect card = featureCardRects(tester).first;
+
+      // El bug era exactamente esto: childAspectRatio: 1 imponia alto == ancho
+      // (206 px) a un contenido que necesitaba ~215. Si el alto volviera a
+      // derivarse del ancho, esta comparacion se rompe.
+      expect(card.height, greaterThan(card.width),
+          reason: 'el contenido necesita mas alto del que daba una celda '
+              'cuadrada de ${card.width.toStringAsFixed(0)} px');
+    });
+
+    testWidgets('la separacion entre tarjetas se mantiene en 24 px',
+        (WidgetTester tester) async {
+      setSurface(tester, const Size(1024, 900));
+      await pumpFeatures(tester);
+      final List<Rect> fila = featureCardRects(tester);
+      expect(fila[1].left - fila[0].right, closeTo(24, 0.01));
+
+      setSurface(tester, const Size(800, 900));
+      await pumpFeatures(tester);
+      final List<Rect> dosFilas = featureCardRects(tester);
+      expect(dosFilas[1].left - dosFilas[0].right, closeTo(24, 0.01),
+          reason: 'separacion horizontal');
+      expect(dosFilas[2].top - dosFilas[0].bottom, closeTo(24, 0.01),
+          reason: 'separacion vertical entre filas');
+    });
+
+    testWidgets('un contenido mas alto agranda la tarjeta en vez de desbordar',
+        (WidgetTester tester) async {
+      // Sustituto de "el copy crece": el texto de AppConstants es const y no
+      // se puede inyectar desde una prueba, pero escalar la tipografia somete
+      // al layout a la misma exigencia — mas alto de contenido en el mismo
+      // ancho de columna.
+      setSurface(tester, const Size(1024, 900));
+      await pumpFeatures(tester);
+      final double normal = featureCardRects(tester).first.height;
+
+      await pumpFeatures(tester, textScaler: const TextScaler.linear(1.6));
+
+      expect(tester.takeException(), isNull,
+          reason: 'un contenido mas alto no puede desbordar la tarjeta');
+      expect(featureCardRects(tester).first.height, greaterThan(normal),
+          reason: 'la tarjeta tiene que crecer para acomodarlo');
     });
   });
 
